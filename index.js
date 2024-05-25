@@ -1,34 +1,37 @@
-const express = require("express");
-const cors = require("cors");
-const db = require("./config/db");
-const mensRoutes = require("./routes/mensRoutes");
+const express = require('express')
+const cors = require("cors")
+const { connection } = require('./db')
+const { mensRouter } = require('./routes/mens.route')
+const { womensRouter } = require('./routes/womens.route')
+require("dotenv").config()
 
-const port = 8080;
+const app = express()
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+app.use(cors())
 
+app.use(express.json())
 
 app.get("/", (req, res) => {
-    res.status(200).json({ msg: "Welcome to Fantastic Backend API" })
+    res.status(200).send("Welcome to the Fantastic Application")
 })
 
-app.use("/mens", mensRoutes);
+// app.use("/auth", authRouter)
+
+
+app.use("/mens", mensRouter)
+app.use("/womens", womensRouter)
 
 
 
-app.listen(port, async () => {
+
+
+app.listen(process.env.port, async () => {
     try {
-        db.connect((error) => {
-            if (error) {
-                console.log(error)
-            } else {
-                console.log("connected to the database")
-            }
-        })
-    } catch (err) {
-        console.log(err)
+        await connection
+        console.log("Successfully Connected to the database server")
+    } catch (error) {
+        console.log(error)
+        console.log("Cannot connect to the database server")
     }
-    console.log(`server is running on port ${port}`);
-});
+    console.log(`Server is running at port ${process.env.port}`)
+})
